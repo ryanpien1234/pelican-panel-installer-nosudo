@@ -13,7 +13,7 @@ print_error() {
 # Check if whiptail is installed, if not install it
 if ! command -v whiptail &> /dev/null; then
     print_error "whiptail is not installed. Installing..."
-    sudo apt-get update && sudo apt-get install -y whiptail
+     apt-get update &&  apt-get install -y whiptail
     if [ $? -ne 0 ]; then
         print_error "Failed to install whiptail."
         exit 1
@@ -37,7 +37,7 @@ WEBSERVER=$(whiptail --title "Select Webserver" --menu "Choose your webserver" 1
 add_php_repo() {
     if ! grep -q "^deb .*$OS" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
         print_success "Adding ondrej/php repository..."
-        sudo add-apt-repository ppa:ondrej/php -y
+         add-apt-repository ppa:ondrej/php -y
         if [ $? -ne 0 ]; then
             print_error "Failed to add ondrej/php repository."
             exit 1
@@ -52,12 +52,12 @@ add_php_repo() {
 # Function to install dependencies
 install_dependencies() {
     print_success "Installing dependencies..."
-    sudo apt-get update
-    sudo apt-get install -y php8.2 php8.2-gd php8.2-mysql php8.2-mbstring php8.2-bcmath php8.2-xml php8.2-curl php8.2-zip php8.2-intl php8.2-sqlite3 php8.2-fpm curl tar composer redis-server
+     apt-get update
+     apt-get install -y php8.2 php8.2-gd php8.2-mysql php8.2-mbstring php8.2-bcmath php8.2-xml php8.2-curl php8.2-zip php8.2-intl php8.2-sqlite3 php8.2-fpm curl tar composer redis-server
     if [ "$WEBSERVER" == "NGINX" ]; then
-        sudo apt-get install -y nginx
+         apt-get install -y nginx
     elif [ "$WEBSERVER" == "Apache" ]; then
-        sudo apt-get install -y apache2
+         apt-get install -y apache2
     fi
     if [ $? -ne 0 ]; then
         print_error "Failed to install dependencies."
@@ -70,8 +70,8 @@ install_dependencies() {
 # Function to install MariaDB
 install_mariadb() {
     print_success "Installing MariaDB..."
-    curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
-    sudo apt-get install -y mariadb-server
+    curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup |  bash
+     apt-get install -y mariadb-server
     if [ $? -ne 0 ]; then
         print_error "Failed to install MariaDB."
         exit 1
@@ -86,10 +86,10 @@ setup_mysql() {
     MYSQL_ROOT_PASSWORD=$(whiptail --passwordbox "Enter the MySQL root password:" 10 60 3>&1 1>&2 2>&3)
     MYSQL_PELICAN_PASSWORD=$(whiptail --passwordbox "Enter the password for the 'pelican' MySQL user:" 10 60 3>&1 1>&2 2>&3)
 
-    sudo mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER 'pelican'@'127.0.0.1' IDENTIFIED BY '$MYSQL_PELICAN_PASSWORD';"
-    sudo mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE panel;"
-    sudo mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON panel.* TO 'pelican'@'127.0.0.1';"
-    sudo mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "FLUSH PRIVILEGES;"
+     mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER 'pelican'@'127.0.0.1' IDENTIFIED BY '$MYSQL_PELICAN_PASSWORD';"
+     mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE panel;"
+     mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON panel.* TO 'pelican'@'127.0.0.1';"
+     mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "FLUSH PRIVILEGES;"
 
     if [ $? -ne 0 ]; then
         print_error "Failed to set up MySQL user and database."
@@ -103,11 +103,11 @@ setup_mysql() {
 create_directories_and_download() {
     if [ ! -d /var/www/pelican ]; then
         print_success "Creating directories and downloading files..."
-        sudo mkdir -p /var/www/pelican
+         mkdir -p /var/www/pelican
         cd /var/www/pelican
-        sudo curl -Lo panel.tar.gz https://github.com/pelican-dev/panel/releases/latest/download/panel.tar.gz
-        sudo tar -xzvf panel.tar.gz
-        sudo chmod -R 755 storage/* bootstrap/cache/
+         curl -Lo panel.tar.gz https://github.com/pelican-dev/panel/releases/latest/download/panel.tar.gz
+         tar -xzvf panel.tar.gz
+         chmod -R 755 storage/* bootstrap/cache/
         if [ $? -ne 0 ]; then
             print_error "Failed to create directories and download files."
             exit 1
@@ -124,7 +124,7 @@ install_composer_dependencies() {
     if [ ! -d /var/www/pelican/vendor ]; then
         print_success "Installing composer dependencies..."
         cd /var/www/pelican
-        sudo composer install --no-dev --optimize-autoloader
+         composer install --no-dev --optimize-autoloader
         if [ $? -ne 0 ]; then
             print_error "Failed to install composer dependencies."
             exit 1
@@ -141,8 +141,8 @@ configure_environment() {
     if [ ! -f /var/www/pelican/.env ]; then
         print_success "Configuring environment..."
         cd /var/www/pelican
-        sudo php artisan p:environment:setup
-        sudo php artisan p:environment:database
+         php artisan p:environment:setup
+         php artisan p:environment:database
         if [ $? -ne 0 ]; then
             print_error "Failed to configure environment."
             exit 1
@@ -157,7 +157,7 @@ configure_environment() {
 # Function to set up mail
 setup_mail() {
     if (whiptail --title "Mail Setup" --yesno "Do you want to set up mail?" 10 60); then
-        sudo php artisan p:environment:mail
+         php artisan p:environment:mail
         if [ $? -ne 0 ]; then
             print_error "Failed to set up mail."
             exit 1
@@ -172,7 +172,7 @@ initialize_database() {
     if [ ! -f /var/www/pelican/database/initialized ]; then
         print_success "Initializing database..."
         cd /var/www/pelican
-        sudo php artisan migrate --seed --force
+         php artisan migrate --seed --force
         if [ $? -ne 0 ]; then
             print_error "Failed to initialize database."
             exit 1
@@ -188,7 +188,7 @@ initialize_database() {
 # Function to create admin user
 create_admin_user() {
     if (whiptail --title "Admin User Setup" --yesno "Do you want to create an admin user?" 10 60); then
-        sudo php artisan p:user:make
+         php artisan p:user:make
         if [ $? -ne 0 ]; then
             print_error "Failed to create admin user."
             exit 1
@@ -200,9 +200,9 @@ create_admin_user() {
 
 # Function to configure crontab
 configure_crontab() {
-    if ! sudo crontab -l -u www-data | grep -q "artisan schedule:run"; then
+    if !  crontab -l -u www-data | grep -q "artisan schedule:run"; then
         print_success "Configuring crontab..."
-        echo "* * * * * php /var/www/pelican/artisan schedule:run >> /dev/null 2>&1" | sudo tee -a /etc/crontab
+        echo "* * * * * php /var/www/pelican/artisan schedule:run >> /dev/null 2>&1" |  tee -a /etc/crontab
         if [ $? -ne 0 ]; then
             print_error "Failed to configure crontab."
             exit 1
@@ -218,9 +218,9 @@ configure_crontab() {
 set_permissions() {
     print_success "Setting permissions..."
     if [ "$WEBSERVER" == "NGINX" ]; then
-        sudo chown -R www-data:www-data /var/www/pelican
+         chown -R www-data:www-data /var/www/pelican
     elif [ "$WEBSERVER" == "Apache" ]; then
-        sudo chown -R www-data:www-data /var/www/pelican
+         chown -R www-data:www-data /var/www/pelican
     fi
     if [ $? -ne 0 ]; then
         print_error "Failed to set permissions."
@@ -236,7 +236,7 @@ configure_nginx() {
         DOMAIN=$(whiptail --inputbox "Enter your domain or IP address (Note: IPs cannot be used with SSL):" 10 60 3>&1 1>&2 2>&3)
         if [ ! -f /etc/nginx/sites-available/pelican.conf ]; then
             print_success "Creating new NGINX configuration file..."
-            cat <<EOL | sudo tee /etc/nginx/sites-available/pelican.conf
+            cat <<EOL |  tee /etc/nginx/sites-available/pelican.conf
 server {
     listen 80;
     server_name $DOMAIN;
@@ -291,7 +291,7 @@ EOL
             fi
 
             print_success "Enabling new NGINX configuration..."
-            sudo ln -s /etc/nginx/sites-available/pelican.conf /etc/nginx/sites-enabled/pelican.conf
+             ln -s /etc/nginx/sites-available/pelican.conf /etc/nginx/sites-enabled/pelican.conf
             if [ $? -ne 0 ]; then
                 print_error "Failed to enable new NGINX configuration."
                 exit 1
@@ -300,7 +300,7 @@ EOL
             fi
 
             print_success "Restarting NGINX..."
-            sudo systemctl restart nginx
+             systemctl restart nginx
             if [ $? -ne 0 ]; then
                 print_error "Failed to restart NGINX."
                 exit 1
@@ -317,7 +317,7 @@ EOL
 configure_redis_queue_worker() {
     print_success "Configuring Redis queue worker..."
 
-    cat <<EOL | sudo tee /etc/systemd/system/pelican.service
+    cat <<EOL |  tee /etc/systemd/system/pelican.service
 # Pelican Queue File
 # ----------------------------------
 
@@ -341,11 +341,11 @@ WantedBy=multi-user.target
 EOL
 
     if [ "$OS" == "Rocky Linux 9" ]; then
-        sudo sed -i 's/redis-server.service/redis.service/' /etc/systemd/system/pelican.service
+         sed -i 's/redis-server.service/redis.service/' /etc/systemd/system/pelican.service
     fi
 
-    sudo systemctl enable --now redis-server
-    sudo systemctl enable --now pelican.service
+     systemctl enable --now redis-server
+     systemctl enable --now pelican.service
 
     if [ $? -ne 0 ]; then
         print_error "Failed to configure Redis queue worker."
