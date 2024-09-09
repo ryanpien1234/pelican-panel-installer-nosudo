@@ -23,7 +23,7 @@ if ! command -v whiptail &> /dev/null; then
 fi
 
 # Get user input for OS and webserver
-OS=$(whiptail --title "Select Operating System" --menu "Choose your OS" 15 60 4 \
+OS=$(whiptail --title "Select Operating System" --menu "Choose your OS (keep in mind, this script is modified to NOT use sudo)" 15 60 4 \
 "Ubuntu 22.04" "" \
 "Ubuntu 24.04" "" \
 "Rocky Linux 9" "" \
