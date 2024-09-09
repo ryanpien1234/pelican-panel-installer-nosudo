@@ -1,4 +1,5 @@
-# Unofficial Pelican Panel Installer 0.0.1
+# Unofficial Pelican Panel Installer no-sudo 0.0.1
+### Script edited to be able to run without sudo installed.
 
 ### 14 Jun 04 - New GitHub branch for updates and testing beta.v0.0.2
 Please test the new beta branch and report any problems. ❤️
