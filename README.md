@@ -35,7 +35,7 @@ Download and run the installer to your VM or VPS. The installer will ask you som
 
 ### Download and set executable
 ```shell
-wget https://raw.githubusercontent.com/dazeb/pelican-installer/main/install_pelican.sh
+wget https://github.com/ryanpien1234/pelican-panel-installer-nosudo/blob/cae890144d632c51d82728254f61c9ffbecb36c7/install_pelican.sh
 chmod +x install_pelican.sh
 ```
 
